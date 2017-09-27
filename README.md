@@ -13,6 +13,6 @@ Assumptions and notable points:
 * Uses Graphics.py for GUI and solution presenter
 	
 <p align="center">
- <img src="https://user-images.githubusercontent.com/8539492/30923909-3145d6be-a37b-11e7-8527-e356bc0964ba.PNG" width="200"/>
-  <img src="https://user-images.githubusercontent.com/8539492/30923911-32c9adee-a37b-11e7-822c-92d16d8c437e.PNG" width="200"/>
+ <img src="https://user-images.githubusercontent.com/8539492/30923909-3145d6be-a37b-11e7-8527-e356bc0964ba.PNG"/>
+ <img src="https://user-images.githubusercontent.com/8539492/30923911-32c9adee-a37b-11e7-822c-92d16d8c437e.PNG"/>
 </p>
