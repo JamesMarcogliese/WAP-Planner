@@ -27,7 +27,7 @@ def main():
 	chanIdx = 0
 	padding = 50
 
-	#Input GUI --------------------
+	# Input GUI --------------------
 	
 	win = GraphWin('WAP-Planner', 400, 400) # create window
 
@@ -127,7 +127,7 @@ def main():
 						win.close()
 						loop = False
 	
-	#Scaler --------------------
+	# Scaler --------------------
 	
 	originalRoomLength = roomLength
 	originalRoomWidth = roomWidth
@@ -147,7 +147,7 @@ def main():
 		roomLength += scale
 		roomWidth += scale
 		
-	#Solution Generator --------------------
+	# Solution Generator --------------------
 	
 	if (frequencyBand == 1): # selects appropriate channel list
 		channels = [["1","blue"], ["6","red"], ["11","green"]]
@@ -174,10 +174,6 @@ def main():
 	
 	numColumns = math.ceil(math.sqrt(minNumWap)) # determine smallest num of columns
 	numRows = math.ceil(float(minNumWap) / float(numColumns)) # determine smallest num of rows per num of columns
-	
-	#print numColumns
-	#print numRows
-	#print roomLength, roomWidth, maxExpectedClients
 	
 	widthOfSubRect = roomWidth / numColumns # width of sub spaces within room
 	lengthOfSubRect = roomLength / numRows # length of sub spaces within room
@@ -210,7 +206,6 @@ def main():
 			freq1 = chanTouch.count(channels[0][0])
 			freq6 = chanTouch.count(channels[1][0])
 			freq11 = chanTouch.count(channels[2][0])
-			#print freq1, freq6, freq11
 			
 			if (freq1 <= freq6 and freq1 < freq11): # select the channel least used 
 				chanIdx = 0
@@ -232,25 +227,56 @@ def main():
 		circDict[i].draw(win)
 		chanDict[i].draw(win)
 		
-	#Graphical additions --------------------
+	# Calculate power level 
+	
+	widthOfSubRect = originalRoomWidth / numColumns # require orignal values rather than scales ones to calculate
+	lengthOfSubRect = originalRoomLength / numRows
+	
+	signalRadius = (math.hypot(widthOfSubRect,lengthOfSubRect) / 2)
+	
+	if (frequencyBand == 1): # selects appropriate signal power list
+		powerDistance = [
+			[0,22.2], [1,25.0], [2,28.0], [3,31.4], [4,35.3], [5,39.6], [6,44.4], [7,49.8], [8,55.9], [9,62.7], [10,70.4], 
+			[11,78.9], [12,88.6], [13,99.4], [14,111.5], [15,125.1], [16,140.4], [17,157.5], [18,176.7], [19,198.3], [20,222.5]
+			]
+	elif (frequencyBand == 2):
+		powerDistance = [
+			[0,10.7], [1,12.0], [2,13.4], [3,15.1], [4,16.9], [5,19.0], [6,21.3], [7,23.9], [8,26.8], [9,30.1], [10,33.8], 
+			[11,37.9], [12,42.5], [13,47.7], [14,53.5], [15,60.1], [16,67.4], [17,75.6], [18,84.8], [19,95.2], [20,106.8]
+			]
+			
+	dBm = None		
+	for i in range(len(powerDistance)):	# determines min power level to meet coverage demands
+		if (signalRadius <= powerDistance[i][1]):
+			dBm = powerDistance[i][0]
+			break
+			
+	if (dBm is None and signalRadius > powerDistance[20][1]): # if coverage exceeds max power, default to max power
+		dBm = 20
+	
+	# Graphical additions --------------------
 	originalLengthStr = str(originalRoomLength) + " m"
 	originalWidthStr = str(originalRoomWidth) + " m"
 	apStr = str(len(circDict)) + " WAPs required to support " + str(int(maxExpectedClients)) + " " + dataRateRequirements + " data-rate clients" 
 	apStr2 = "in a " + str(roomLength) + "m x " + str(roomWidth) + "m room." 
-	
+	apStr3 = "All APs should be set to a power level of " + str(dBm) + " dBm"
+	apStr4 = "and be placed " + str(round(widthOfSubRect, 1)) + "m x " + str(round(lengthOfSubRect,1)) +"m apart from each other."
 	
 	lengthText = Text(Point((roomWidth + padding + 40), (roomLength / 2 + padding)), originalLengthStr)
 	widthText = Text(Point((roomWidth / 2 + padding), (roomLength + padding + 30)), originalWidthStr)
 	apText = Text(Point((roomWidth + padding + 250), (padding + 50)), apStr)
 	apText2 = Text(Point((roomWidth + padding + 250), (padding + 70)), apStr2)
-	
+	apText3 = Text(Point((roomWidth + padding + 250), (padding + 120)), apStr3) 
+	apText4 = Text(Point((roomWidth + padding + 250), (padding + 140)), apStr4)
 	
 	lengthText.draw(win)
 	widthText.draw(win)
 	apText.draw(win)
 	apText2.draw(win)
+	apText3.draw(win)
+	apText4.draw(win)
 		
-	win.getMouse()
+	win.getMouse() # wait for user to click screen to close window
 	win.close()
 
 if __name__ == '__main__':
